@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- FINLY Brand Colors -->
+    <color name="finly_blue">#1A237E</color>
+    <color name="finly_blue_dark">#0D1240</color>
+    <color name="finly_blue_light">#E8EAF6</color>
+    <color name="finly_green">#4CAF50</color>
+    <color name="finly_green_light">#E8F5E9</color>
+    <color name="finly_background">#FFFFFF</color>
+    <color name="finly_text_primary">#212121</color>
+    <color name="finly_text_secondary">#757575</color>
+    <color name="finly_accent_blue">#3F51B5</color>
+
+    <color name="primary">@color/finly_blue</color>
+    <color name="primary_variant">@color/finly_blue_dark</color>
+    <color name="secondary">@color/finly_green</color>
+    <color name="background">@color/finly_background</color>
+    <color name="error">#B00020</color>
+    <color name="white_gray">#F5F5F5</color>
+</resources>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/finly_blue_light">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/finly_blue_light"
+            app:title="Plan Details"
+            app:titleCentered="true"
+            app:titleTextColor="@color/finly_blue"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@color/finly_blue" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/tv_detail_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vacation"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/finly_blue" />
+
+            <TextView
+                android:id="@+id/tv_detail_target"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Target: ₱ 5,000"
+                android:textSize="18sp"
+                android:textColor="@color/finly_green"
+                android:layout_marginTop="8dp" />
+
+            <!-- Plan Generator Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Saving Plan Generator"
+                        android:textStyle="bold"
+                        android:textColor="@color/finly_blue" />
+
+                    <TextView
+                        android:id="@+id/tv_suggested_amount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Suggested: ₱ 100 / week"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/finly_green"
+                        android:layout_marginTop="8dp" />
+
+                    <TextView
+                        android:id="@+id/tv_time_left"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="15 weeks left"
+                        android:textSize="12sp"
+                        android:textColor="@color/finly_text_secondary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="32dp">
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/circular_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:indicatorSize="160dp"
+                    app:trackThickness="16dp"
+                    app:indicatorColor="@color/finly_green"
+                    app:trackColor="@color/white"
+                    android:progress="60" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tv_detail_percent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="60%"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/finly_text_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SAVED"
+                        android:textSize="12sp"
+                        android:textColor="@color/finly_text_secondary" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/btn_add_saving"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="40dp"
+                android:text="Add Savings"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/finly_blue"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button.Rounded" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

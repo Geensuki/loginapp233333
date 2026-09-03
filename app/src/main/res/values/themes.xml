@@ -1,0 +1,16 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Savingsly" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/finly_blue</item>
+        <item name="colorSecondary">@color/finly_green</item>
+    </style>
+
+    <style name="Theme.Savingsly" parent="Base.Theme.Savingsly" />
+
+    <style name="Theme.Loginapp" parent="Theme.Savingsly" />
+
+    <style name="ShapeAppearanceOverlay.Material3.Button.Rounded" parent="">
+        <item name="cornerSize">28dp</item>
+    </style>
+</resources>
