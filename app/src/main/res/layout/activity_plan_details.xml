@@ -107,7 +107,7 @@
                     app:indicatorSize="160dp"
                     app:trackThickness="16dp"
                     app:indicatorColor="@color/finly_green"
-                    app:trackColor="@color/white"
+                    app:trackColor="@color/finly_blue_light"
                     android:progress="60" />
 
                 <LinearLayout
@@ -124,7 +124,7 @@
                         android:text="60%"
                         android:textSize="32sp"
                         android:textStyle="bold"
-                        android:textColor="@color/finly_text_primary" />
+                        android:textColor="@color/finly_blue" />
 
                     <TextView
                         android:layout_width="wrap_content"

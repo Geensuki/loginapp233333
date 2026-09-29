@@ -45,7 +45,15 @@ public class PlanDetailsActivity extends AppCompatActivity {
         planEndDate = getIntent().getStringExtra("planEndDate");
         planAllowance = getIntent().getDoubleExtra("planAllowance", 0);
 
-        binding.toolbar.setOnClickListener(v -> finish());
+        binding.toolbar.setNavigationOnClickListener(v -> finish());
+        binding.toolbar.inflateMenu(R.menu.menu_plan_details);
+        binding.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_delete_plan) {
+                confirmDeletePlan();
+                return true;
+            }
+            return false;
+        });
 
         updateUI();
 
@@ -197,5 +205,23 @@ public class PlanDetailsActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
+    }
+
+    private void confirmDeletePlan() {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Plan")
+                .setMessage("Are you sure you want to delete '" + planName + "'? All savings entries for this plan will also be removed.")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    NotificationScheduler.cancelPlanNotifications(this, planId);
+                    boolean deleted = dbHelper.deletePlan(planId);
+                    if (deleted) {
+                        Toast.makeText(this, "Plan deleted successfully", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(this, "Failed to delete plan", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 }

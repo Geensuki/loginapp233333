@@ -194,6 +194,9 @@ public class AddPlanActivity extends AppCompatActivity {
             if (current > 0) {
                 dbHelper.addSaving((int) id, current, startDate);
             }
+            SavingPlan createdPlan = new SavingPlan((int) id, userId, name, target, startDate, endDate, frequency, allowance, priority, notes);
+            NotificationScheduler.schedulePlanNotifications(this, createdPlan);
+
             Toast.makeText(this, "Plan created successfully!", Toast.LENGTH_SHORT).show();
             finish();
         } else {

@@ -6,6 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "Savingsly.db";
     private static final int DATABASE_VERSION = 3;
@@ -167,5 +172,168 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return total;
+    }
+
+    public int calculateStreak(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Get all unique saving dates for this user, ordered by date descending
+        String query = "SELECT DISTINCT " + COLUMN_SAVING_DATE + " FROM " + TABLE_SAVINGS +
+                " WHERE " + COLUMN_SAVING_PLAN_ID + " IN (SELECT " + COLUMN_PLAN_ID + " FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_USER_ID + " = ?)" +
+                " ORDER BY " + COLUMN_SAVING_DATE + " DESC";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        if (cursor == null) {
+            return 0;
+        }
+        if (!cursor.moveToFirst()) {
+            cursor.close();
+            return 0;
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        Calendar cal = Calendar.getInstance();
+
+        // Get Today's date string
+        String todayStr = sdf.format(cal.getTime());
+
+        // Get Yesterday's date string
+        cal.add(Calendar.DATE, -1);
+        String yesterdayStr = sdf.format(cal.getTime());
+
+        int streak = 0;
+        String firstDate = cursor.getString(0);
+
+        // Streak is active if the last entry was today or yesterday
+        if (firstDate.equals(todayStr) || firstDate.equals(yesterdayStr)) {
+            streak = 1;
+
+            String currentDateStr = firstDate;
+            while (cursor.moveToNext()) {
+                String prevDateStr = cursor.getString(0);
+                try {
+                    Date current = sdf.parse(currentDateStr);
+                    Date prev = sdf.parse(prevDateStr);
+
+                    long diff = current.getTime() - prev.getTime();
+                    long diffDays = diff / (24 * 60 * 60 * 1000);
+
+                    if (diffDays == 1) {
+                        streak++;
+                        currentDateStr = prevDateStr;
+                    } else {
+                        break; // Gap found
+                    }
+                } catch (Exception e) {
+                    break;
+                }
+            }
+        }
+
+        cursor.close();
+        return streak;
+    }
+
+    public boolean deletePlan(int planId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_SAVINGS, COLUMN_SAVING_PLAN_ID + " = ?", new String[]{String.valueOf(planId)});
+        int rows = db.delete(TABLE_PLANS, COLUMN_PLAN_ID + " = ?", new String[]{String.valueOf(planId)});
+        return rows > 0;
+    }
+
+    public SavingPlan getPlanById(int planId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_PLANS, null, COLUMN_PLAN_ID + " = ?", new String[]{String.valueOf(planId)}, null, null, null);
+        SavingPlan plan = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PLAN_ID));
+            int userId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PLAN_USER_ID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_NAME));
+            double target = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_PLAN_TARGET));
+            String start = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_START_DATE));
+            String end = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_END_DATE));
+            String freq = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_FREQUENCY));
+            double allowance = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_PLAN_ALLOWANCE));
+            String priority = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_PRIORITY));
+            String notes = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_NOTES));
+
+            plan = new SavingPlan(id, userId, name, target, start, end, freq, allowance, priority, notes);
+            cursor.close();
+        }
+        return plan;
+    }
+
+    public java.util.List<SavingPlan> getAllPlans() {
+        java.util.List<SavingPlan> plans = new java.util.ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_PLANS, null, null, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PLAN_ID));
+                int userId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PLAN_USER_ID));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_NAME));
+                double target = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_PLAN_TARGET));
+                String start = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_START_DATE));
+                String end = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_END_DATE));
+                String freq = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_FREQUENCY));
+                double allowance = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_PLAN_ALLOWANCE));
+                String priority = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_PRIORITY));
+                String notes = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLAN_NOTES));
+
+                plans.add(new SavingPlan(id, userId, name, target, start, end, freq, allowance, priority, notes));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return plans;
+    }
+
+    public java.util.List<SavingsAnalytics.ChartDataPoint> getMonthlySavingsForUser(int userId) {
+        java.util.List<SavingsAnalytics.ChartDataPoint> points = new java.util.ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT substr(" + COLUMN_SAVING_DATE + ", 1, 7) AS month_period, SUM(" + COLUMN_SAVING_AMOUNT + ") AS total " +
+                "FROM " + TABLE_SAVINGS + " WHERE " + COLUMN_SAVING_PLAN_ID + " IN (SELECT " + COLUMN_PLAN_ID + " FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_USER_ID + " = ?) " +
+                "GROUP BY month_period ORDER BY month_period ASC";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String period = cursor.getString(0);
+                double total = cursor.getDouble(1);
+                String displayLabel = period;
+                if (period != null && period.length() >= 7) {
+                    try {
+                        Date d = new SimpleDateFormat("yyyy-MM", Locale.US).parse(period);
+                        if (d != null) {
+                            displayLabel = new SimpleDateFormat("MMM", Locale.US).format(d);
+                        }
+                    } catch (Exception ignored) {}
+                }
+                points.add(new SavingsAnalytics.ChartDataPoint(displayLabel, total));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return points;
+    }
+
+    public java.util.List<SavingsAnalytics.ChartDataPoint> getPlanBreakdownForUser(int userId) {
+        java.util.List<SavingsAnalytics.ChartDataPoint> points = new java.util.ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT p." + COLUMN_PLAN_NAME + ", COALESCE(SUM(s." + COLUMN_SAVING_AMOUNT + "), 0) AS total " +
+                "FROM " + TABLE_PLANS + " p LEFT JOIN " + TABLE_SAVINGS + " s ON p." + COLUMN_PLAN_ID + " = s." + COLUMN_SAVING_PLAN_ID + " " +
+                "WHERE p." + COLUMN_PLAN_USER_ID + " = ? GROUP BY p." + COLUMN_PLAN_ID;
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String name = cursor.getString(0);
+                double total = cursor.getDouble(1);
+                if (name != null && name.length() > 8) {
+                    name = name.substring(0, 7) + "..";
+                }
+                points.add(new SavingsAnalytics.ChartDataPoint(name != null ? name : "Plan", total));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return points;
     }
 }
