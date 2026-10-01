@@ -7,10 +7,16 @@ public class SavingsAnalytics {
     public static class ChartDataPoint {
         private final String label;
         private final double value;
+        private final boolean isPredicted;
 
         public ChartDataPoint(String label, double value) {
+            this(label, value, false);
+        }
+
+        public ChartDataPoint(String label, double value, boolean isPredicted) {
             this.label = label;
             this.value = value;
+            this.isPredicted = isPredicted;
         }
 
         public String getLabel() {
@@ -19,6 +25,10 @@ public class SavingsAnalytics {
 
         public double getValue() {
             return value;
+        }
+
+        public boolean isPredicted() {
+            return isPredicted;
         }
     }
 

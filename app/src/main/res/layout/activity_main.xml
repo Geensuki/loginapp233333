@@ -76,7 +76,7 @@
                 android:layout_marginTop="24dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/white">
+                app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -195,47 +195,64 @@
                         android:background="@color/finly_blue_light"
                         android:layout_marginTop="16dp" />
 
-                    <!-- Analytics Chart Header & Toggle -->
+                    <!-- Analytics & Prediction Chart Header & Toggle -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:orientation="vertical">
 
                         <TextView
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Savings Analytics"
+                            android:text="Prediction &amp; Analytics"
                             android:textStyle="bold"
                             android:textSize="16sp"
                             android:textColor="@color/finly_blue" />
 
                         <com.google.android.material.button.MaterialButtonToggleGroup
                             android:id="@+id/toggle_analytics_mode"
-                            android:layout_width="wrap_content"
-                            android:layout_height="36dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="38dp"
+                            android:layout_marginTop="10dp"
                             app:singleSelection="true"
                             app:selectionRequired="true">
 
                             <Button
                                 android:id="@+id/btn_chart_monthly"
                                 style="@style/Widget.Material3.Button.OutlinedButton"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:text="Monthly"
+                                android:layout_weight="1"
+                                android:text="Actual"
                                 android:textSize="11sp"
-                                android:paddingHorizontal="10dp" />
+                                app:backgroundTint="@color/toggle_button_background"
+                                android:textColor="@color/toggle_button_text"
+                                app:strokeColor="@color/finly_blue" />
+
+                            <Button
+                                android:id="@+id/btn_chart_prediction"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:text="Forecast"
+                                android:textSize="11sp"
+                                app:backgroundTint="@color/toggle_button_background"
+                                android:textColor="@color/toggle_button_text"
+                                app:strokeColor="@color/finly_blue" />
 
                             <Button
                                 android:id="@+id/btn_chart_plans"
                                 style="@style/Widget.Material3.Button.OutlinedButton"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="match_parent"
+                                android:layout_weight="1"
                                 android:text="By Plan"
                                 android:textSize="11sp"
-                                android:paddingHorizontal="10dp" />
+                                app:backgroundTint="@color/toggle_button_background"
+                                android:textColor="@color/toggle_button_text"
+                                app:strokeColor="@color/finly_blue" />
                         </com.google.android.material.button.MaterialButtonToggleGroup>
                     </LinearLayout>
 
@@ -245,6 +262,43 @@
                         android:layout_width="match_parent"
                         android:layout_height="180dp"
                         android:layout_marginTop="12dp" />
+
+                    <!-- Prediction Insights Panel -->
+                    <LinearLayout
+                        android:id="@+id/layout_prediction_insights"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp"
+                        android:padding="12dp"
+                        android:background="@drawable/badge_green"
+                        android:gravity="center_vertical"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_predicted_next_month"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Forecast Next Month: ₱ 2,500.00"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/finly_blue" />
+
+                            <TextView
+                                android:id="@+id/tv_projected_yearly_savings"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="1-Year Consistent Savings: ₱ 30,000.00"
+                                android:textSize="11sp"
+                                android:textColor="@color/finly_green"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
 
                     <!-- Key Analytics Summary Metrics -->
                     <com.google.android.material.card.MaterialCardView
@@ -262,7 +316,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:padding="14dp"
-                            android:weightSum="3">
+                            android:weightSum="2">
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -310,30 +364,6 @@
                                     android:textSize="14sp"
                                     android:textStyle="bold"
                                     android:textColor="@color/finly_green" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Goal Achieved"
-                                    android:textSize="11sp"
-                                    android:textColor="@color/finly_text_secondary" />
-
-                                <TextView
-                                    android:id="@+id/tv_completion_rate"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="0%"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"
-                                    android:textColor="@color/finly_blue" />
                             </LinearLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -443,7 +473,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/white"
+        android:background="@color/card_background"
         app:itemIconTint="@color/finly_blue"
         app:itemTextColor="@color/finly_blue"
         app:menu="@menu/bottom_nav_menu"

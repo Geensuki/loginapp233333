@@ -22,6 +22,8 @@ public class AnalyticsChartView extends View {
     private List<SavingsAnalytics.ChartDataPoint> dataPoints = new ArrayList<>();
     private Paint barPaint;
     private Paint barHighlightPaint;
+    private Paint predictedBarPaint;
+    private Paint predictedHighlightPaint;
     private Paint gridPaint;
     private Paint textPaint;
     private Paint valueTextPaint;
@@ -50,6 +52,8 @@ public class AnalyticsChartView extends View {
     private void init(Context context) {
         int greenColor = ContextCompat.getColor(context, R.color.finly_green);
         int blueColor = ContextCompat.getColor(context, R.color.finly_blue);
+        int gridColor = ContextCompat.getColor(context, R.color.finly_blue_light);
+        int textSecondary = ContextCompat.getColor(context, R.color.finly_text_secondary);
 
         barPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         barPaint.setColor(greenColor);
@@ -57,12 +61,18 @@ public class AnalyticsChartView extends View {
         barHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         barHighlightPaint.setColor(Color.parseColor("#66BB6A"));
 
+        predictedBarPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        predictedBarPaint.setColor(Color.parseColor("#0288D1"));
+
+        predictedHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        predictedHighlightPaint.setColor(Color.parseColor("#4FC3F7"));
+
         gridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        gridPaint.setColor(Color.parseColor("#E0E0E0"));
+        gridPaint.setColor(gridColor);
         gridPaint.setStrokeWidth(2f);
 
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        textPaint.setColor(Color.parseColor("#757575"));
+        textPaint.setColor(textSecondary);
         textPaint.setTextSize(28f);
         textPaint.setTextAlign(Paint.Align.CENTER);
 
@@ -149,7 +159,13 @@ public class AnalyticsChartView extends View {
             RectF barRect = new RectF(barLeft, barTop, barRight, baselineY);
             barRects[i] = barRect;
 
-            Paint currentBarPaint = (i == selectedIndex) ? barHighlightPaint : barPaint;
+            Paint currentBarPaint;
+            if (dp.isPredicted()) {
+                currentBarPaint = (i == selectedIndex) ? predictedHighlightPaint : predictedBarPaint;
+            } else {
+                currentBarPaint = (i == selectedIndex) ? barHighlightPaint : barPaint;
+            }
+
             canvas.drawRoundRect(barRect, 12f, 12f, currentBarPaint);
 
             canvas.drawText(dp.getLabel(), centerX, height - 20f, textPaint);
@@ -164,7 +180,8 @@ public class AnalyticsChartView extends View {
             SavingsAnalytics.ChartDataPoint dp = dataPoints.get(selectedIndex);
             RectF rect = barRects[selectedIndex];
 
-            String tooltipText = String.format(Locale.US, "₱ %.2f", dp.getValue());
+            String prefix = dp.isPredicted() ? "Pred: " : "";
+            String tooltipText = String.format(Locale.US, "%s₱ %.2f", prefix, dp.getValue());
             float textWidth = tooltipTextPaint.measureText(tooltipText);
             float tooltipW = textWidth + 32f;
             float tooltipH = 50f;

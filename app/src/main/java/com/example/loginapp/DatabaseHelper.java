@@ -336,4 +336,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return points;
     }
+
+    public boolean resetPassword(String emailOrName, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USER_PASSWORD, newPassword);
+
+        String whereClause = COLUMN_USER_EMAIL + " = ? OR " + COLUMN_USER_NAME + " = ?";
+        String[] whereArgs = new String[]{emailOrName, emailOrName};
+
+        int rows = db.update(TABLE_USERS, values, whereClause, whereArgs);
+        return rows > 0;
+    }
 }

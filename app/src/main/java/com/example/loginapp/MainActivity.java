@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, AddPlanActivity.class));
                 return true;
             } else if (itemId == R.id.nav_more) {
-                Toast.makeText(this, "FINLY - Financialfriendly App", Toast.LENGTH_SHORT).show();
+                showMoreMenu();
                 return true;
             }
             return false;
@@ -147,19 +148,27 @@ public class MainActivity extends AppCompatActivity {
         double overallPercent = (totalTargetAll > 0) ? (totalSavedAll / totalTargetAll) * 100 : 0;
         binding.tvTotalProgressPercent.setText(String.format(Locale.US, "%.0f%%", overallPercent));
         binding.totalProgressCircular.setProgress((int) overallPercent);
-        binding.tvCompletionRate.setText(String.format(Locale.US, "%.0f%%", overallPercent));
 
         adapter.notifyDataSetChanged();
         updateAnalyticsChart();
     }
 
-    private boolean isMonthlyAnalyticsMode = true;
+    private static final int ANALYTICS_MODE_ACTUAL = 0;
+    private static final int ANALYTICS_MODE_PREDICTION = 1;
+    private static final int ANALYTICS_MODE_PLANS = 2;
+    private int currentAnalyticsMode = ANALYTICS_MODE_ACTUAL;
 
     private void setupAnalyticsToggle() {
         binding.toggleAnalyticsMode.check(R.id.btn_chart_monthly);
         binding.toggleAnalyticsMode.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (isChecked) {
-                isMonthlyAnalyticsMode = (checkedId == R.id.btn_chart_monthly);
+                if (checkedId == R.id.btn_chart_monthly) {
+                    currentAnalyticsMode = ANALYTICS_MODE_ACTUAL;
+                } else if (checkedId == R.id.btn_chart_prediction) {
+                    currentAnalyticsMode = ANALYTICS_MODE_PREDICTION;
+                } else if (checkedId == R.id.btn_chart_plans) {
+                    currentAnalyticsMode = ANALYTICS_MODE_PLANS;
+                }
                 updateAnalyticsChart();
             }
         });
@@ -167,10 +176,28 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateAnalyticsChart() {
         List<SavingsAnalytics.ChartDataPoint> dataPoints;
-        if (isMonthlyAnalyticsMode) {
-            dataPoints = dbHelper.getMonthlySavingsForUser(userId);
-        } else {
+        List<SavingsAnalytics.ChartDataPoint> monthlyActuals = dbHelper.getMonthlySavingsForUser(userId);
+
+        double totalSaved = 0;
+        double totalTarget = 0;
+        for (SavingPlan p : planList) {
+            totalTarget += p.getTargetAmount();
+            totalSaved += dbHelper.getTotalSavedForPlan(p.getId());
+        }
+
+        if (currentAnalyticsMode == ANALYTICS_MODE_PREDICTION) {
+            PredictionModel.PredictionResult result = PredictionModel.calculatePrediction(monthlyActuals, totalSaved, totalTarget, planList);
+            dataPoints = result.getChartPoints();
+
+            binding.layoutPredictionInsights.setVisibility(View.VISIBLE);
+            binding.tvPredictedNextMonth.setText(String.format(Locale.US, "Forecast Next Month: ₱ %.2f", result.getPredictedNextMonth()));
+            binding.tvProjectedYearlySavings.setText(String.format(Locale.US, "1-Year Consistent Savings: ₱ %.2f", result.getProjectedYearlySavings()));
+        } else if (currentAnalyticsMode == ANALYTICS_MODE_PLANS) {
+            binding.layoutPredictionInsights.setVisibility(View.GONE);
             dataPoints = dbHelper.getPlanBreakdownForUser(userId);
+        } else {
+            binding.layoutPredictionInsights.setVisibility(View.GONE);
+            dataPoints = monthlyActuals;
         }
 
         binding.analyticsChartView.setData(dataPoints);
@@ -188,6 +215,50 @@ public class MainActivity extends AppCompatActivity {
 
         binding.tvAvgMonthlySavings.setText(String.format(Locale.US, "₱ %.2f", avg));
         binding.tvHighestPeriod.setText(String.format(Locale.US, "₱ %.2f", highest));
+    }
+
+    private void showMoreMenu() {
+        com.google.android.material.bottomsheet.BottomSheetDialog dialog = new com.google.android.material.bottomsheet.BottomSheetDialog(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_more_menu, null);
+        dialog.setContentView(view);
+
+        android.widget.TextView tvUserName = view.findViewById(R.id.tv_more_user_name);
+        String name = dbHelper.getUserName(userId);
+        tvUserName.setText((name != null && !name.isEmpty()) ? name : "User");
+
+        com.google.android.material.button.MaterialButtonToggleGroup langToggle = view.findViewById(R.id.toggle_language_selector);
+        String currentLang = LanguageHelper.getLanguage(this);
+        if (LanguageHelper.LANGUAGE_FILIPINO.equals(currentLang)) {
+            langToggle.check(R.id.btn_lang_filipino);
+        } else {
+            langToggle.check(R.id.btn_lang_english);
+        }
+
+        langToggle.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (isChecked) {
+                String newLang = (checkedId == R.id.btn_lang_filipino) ? LanguageHelper.LANGUAGE_FILIPINO : LanguageHelper.LANGUAGE_ENGLISH;
+                if (!newLang.equals(LanguageHelper.getLanguage(this))) {
+                    LanguageHelper.setLanguage(this, newLang);
+                    dialog.dismiss();
+                    recreate();
+                }
+            }
+        });
+
+        view.findViewById(R.id.btn_more_logout).setOnClickListener(v -> {
+            getSharedPreferences("SavingslyPrefs", MODE_PRIVATE).edit().remove("userId").apply();
+            dialog.dismiss();
+            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+        });
+
+        dialog.show();
+    }
+
+    @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LanguageHelper.applyLanguage(newBase));
     }
 
     private void setupNotifications() {

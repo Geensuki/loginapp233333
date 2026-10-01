@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">FINLY</string>
+    <string name="app_full_name">Pansariling Pinansyal na Gabay</string>
+    <string name="app_tagline">Magplano. Mag-ipon. Magtagumpay.</string>
+
+    <!-- Dashboard -->
+    <string name="savings_overview">Pangkalahatang Ipon</string>
+    <string name="this_month">Ngayong Buwan</string>
+    <string name="total_savings">Kabuuan ng Ipon</string>
+    <string name="total_target">Laynong Halaga</string>
+    <string name="saved_percent">IPON</string>
+    <string name="current_streak">Tuloy-tuloy na Araw</string>
+    <string name="streak_badge">Ipagpatuloy! 💪</string>
+    <string name="active_plans">Aktibong Plano sa Pag-iipon</string>
+    <string name="see_all">Tingnan Lahat</string>
+    <string name="add_savings_btn">+ Magdagdag ng Ipon</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Tahanan</string>
+    <string name="nav_plans">Mga Plano</string>
+    <string name="nav_add">Magdagdag</string>
+    <string name="nav_progress">Pagsulong</string>
+    <string name="nav_more">Higit Pa</string>
+</resources>

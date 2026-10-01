@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/sheet_background"
+    android:padding="24dp">
+
+    <!-- Top Drag Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/finly_blue_light"
+        android:layout_marginBottom="16dp" />
+
+    <!-- User Profile Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_person"
+            android:background="@drawable/sheet_background"
+            android:backgroundTint="@color/finly_blue_light"
+            android:padding="12dp"
+            app:tint="@color/finly_blue"
+            android:contentDescription="@string/app_name" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp">
+
+            <TextView
+                android:id="@+id/tv_more_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="User Name"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/finly_blue" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FINLY Member"
+                android:textSize="13sp"
+                android:textColor="@color/finly_text_secondary" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/finly_blue_light"
+        android:layout_marginVertical="12dp" />
+
+    <!-- Language Selector -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Language / Wika"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:textColor="@color/finly_blue"
+        android:layout_marginBottom="8dp" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggle_language_selector"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:singleSelection="true"
+        app:selectionRequired="true">
+
+        <Button
+            android:id="@+id/btn_lang_english"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="English 🇺🇸"
+            app:backgroundTint="@color/toggle_button_background"
+            android:textColor="@color/toggle_button_text"
+            app:strokeColor="@color/finly_blue" />
+
+        <Button
+            android:id="@+id/btn_lang_filipino"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Filipino 🇵🇭"
+            app:backgroundTint="@color/toggle_button_background"
+            android:textColor="@color/toggle_button_text"
+            app:strokeColor="@color/finly_blue" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/finly_blue_light"
+        android:layout_marginVertical="16dp" />
+
+    <!-- Log Out Button -->
+    <Button
+        android:id="@+id/btn_more_logout"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="Log Out"
+        android:textColor="@color/white"
+        android:backgroundTint="#D32F2F"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button.Rounded" />
+
+</LinearLayout>
